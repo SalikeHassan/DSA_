@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hash Table Chaining - Clear Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 30px;
+            text-align: center;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .scenario-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 0 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,123,255,0.3);
+        }
+
+        .scenario-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,123,255,0.4);
+        }
+
+        .scenario-btn.active {
+            background: #28a745;
+            box-shadow: 0 2px 5px rgba(40,167,69,0.3);
+        }
+
+        .main-content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .visualization-panel {
+            flex: 2;
+            padding: 40px;
+            background: white;
+        }
+
+        .code-panel {
+            flex: 1;
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            border-left: 1px solid #e9ecef;
+        }
+
+        .code-panel h3 {
+            color: #68d391;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .code-line {
+            padding: 5px 10px;
+            margin: 2px 0;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .code-line.highlight {
+            background: #4a5568;
+            border-left: 4px solid #f6e05e;
+            transform: translateX(10px);
+        }
+
+        .hash-table-container {
+            text-align: center;
+        }
+
+        .hash-table-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #2d3748;
+        }
+
+        .operation-display {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+
+        .hash-table {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .bucket-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            min-height: 80px;
+            position: relative;
+        }
+
+        .bucket-index {
+            width: 80px;
+            height: 60px;
+            background: #6c757d;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            margin-right: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .bucket-index.active {
+            background: #dc3545;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 3px 10px rgba(220,53,69,0.3); }
+            to { box-shadow: 0 5px 20px rgba(220,53,69,0.6); }
+        }
+
+        .chain-container {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .node {
+            background: #007bff;
+            color: white;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 3px 10px rgba(0,123,255,0.3);
+            position: relative;
+            transition: all 0.5s ease;
+            display: flex;
+            min-width: 140px;
+            overflow: hidden;
+        }
+
+        .node-data {
+            padding: 12px 15px;
+            background: #007bff;
+            flex: 1;
+            border-right: 2px solid rgba(255,255,255,0.3);
+            text-align: center;
+        }
+
+        .node-next {
+            padding: 12px 10px;
+            background: #0056b3;
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .node-next.null-next {
+            background: #6c757d;
+            color: #fff;
+        }
+
+        .node-next.has-next {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .node.examining {
+            background: #ffc107;
+            color: #212529;
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(255,193,7,0.5);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .node.updated {
+            background: #28a745;
+            animation: updateFlash 1s ease-in-out;
+        }
+
+        .node.new-node {
+            background: #17a2b8;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1.1); }
+            50% { transform: scale(1.2); }
+        }
+
+        @keyframes updateFlash {
+            0%, 100% { background: #28a745; }
+            50% { background: #20c997; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .arrow {
+            margin: 0 15px;
+            font-size: 24px;
+            color: #6c757d;
+            font-weight: bold;
+        }
+
+        .arrow.highlight {
+            color: #dc3545;
+            animation: bounce 0.6s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+        }
+
+        .empty-slot {
+            color: #6c757d;
+            font-style: italic;
+            padding: 15px 20px;
+            border: 2px dashed #ced4da;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+
+        .step-indicator {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            color: #4a5568;
+            font-size: 16px;
+        }
+
+        .hash-calculation {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #856404;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #28a745);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .pointer-indicator {
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333 !important;
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            border: 2px solid;
+            animation: pointerGlow 2s ease-in-out infinite;
+        }
+
+        .pointer-indicator.current-pointer {
+            border-color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .pointer-indicator.previous-pointer {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .pointer-indicator.null-pointer {
+            border-color: #6c757d;
+            background: rgba(108, 117, 125, 0.1);
+            font-style: italic;
+        }
+
+        @keyframes pointerGlow {
+            0%, 100% { 
+                box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+                transform: translateX(-50%) scale(1);
+            }
+            50% { 
+                box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+                transform: translateX(-50%) scale(1.05);
+            }
+        }
+
+        .legend-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Hash Table Chaining Visualization</h1>
+            <p>Understanding how collision resolution works with linked lists</p>
+        </div>
+
+        <div class="controls">
+            <button class="scenario-btn active" onclick="showScenario(1)">
+                📝 Scenario 1: Update Existing Key
+            </button>
+            <button class="scenario-btn" onclick="showScenario(2)">
+                ➕ Scenario 2: Add Third Key to Chain
+            </button>
+            <button class="scenario-btn" onclick="resetAnimation()">
+                🔄 Restart Animation
+            </button>
+            <button class="scenario-btn" id="pauseBtn" onclick="togglePause()">
+                ⏸️ Pause
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div class="visualization-panel">
+                <div class="hash-table-container">
+                    <div class="operation-display" id="operationDisplay">
+                        Ready to start...
+                    </div>
+
+                    <div class="hash-calculation" id="hashCalculation" style="display: none;">
+                        Hash calculation will appear here
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="step-indicator" id="stepIndicator">
+                        <div class="step-title">Click a scenario to begin</div>
+                        <div class="step-description">Choose one of the scenarios above to see the animation</div>
+                    </div>
+
+                    <div class="hash-table" id="hashTable">
+                        <!-- Hash table will be generated here -->
+                    </div>
+
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #6c757d;"></div>
+                            <span>Bucket Index</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #007bff;"></div>
+                            <span>Normal Node</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #ffc107;"></div>
+                            <span>Examining Node</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #28a745;"></div>
+                            <span>Updated Node</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #17a2b8;"></div>
+                            <span>New Node</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-panel">
+                <h3>📋 Code Execution Steps</h3>
+                <div id="codeDisplay">
+                    <div class="code-line">public void Put(string key, int value)</div>
+                    <div class="code-line">{</div>
+                    <div class="code-line">    int index = GetHashValue(key);</div>
+                    <div class="code-line">    Node newNode = new Node(key, value);</div>
+                    <div class="code-line">    </div>
+                    <div class="code-line">    if (buckets[index] == null)</div>
+                    <div class="code-line">    {</div>
+                    <div class="code-line">        buckets[index] = newNode;</div>
+                    <div class="code-line">        size++;</div>
+                    <div class="code-line">    }</div>
+                    <div class="code-line">    else</div>
+                    <div class="code-line">    {</div>
+                    <div class="code-line">        Node current = buckets[index];</div>
+                    <div class="code-line">        Node previous = null;</div>
+                    <div class="code-line">        </div>
+                    <div class="code-line">        while (current != null)</div>
+                    <div class="code-line">        {</div>
+                    <div class="code-line">            if (current.Key == key)</div>
+                    <div class="code-line">            {</div>
+                    <div class="code-line">                current.Value = value;</div>
+                    <div class="code-line">                return;</div>
+                    <div class="code-line">            }</div>
+                    <div class="code-line">            previous = current;</div>
+                    <div class="code-line">            current = current.Next;</div>
+                    <div class="code-line">        }</div>
+                    <div class="code-line">        </div>
+                    <div class="code-line">        if (previous != null)</div>
+                    <div class="code-line">        {</div>
+                    <div class="code-line">            previous.Next = newNode;</div>
+                    <div class="code-line">        }</div>
+                    <div class="code-line">        size++;</div>
+                    <div class="code-line">    }</div>
+                    <div class="code-line">}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScenario = 1;
+        let animationTimeout;
+        let isPaused = false;
+        let currentStepIndex = 0;
+        let currentSteps = [];
+        let pausedTime = 0;
+        let stepStartTime = 0;
+
+        function createHashTable() {
+            const table = document.getElementById('hashTable');
+            table.innerHTML = '';
+
+            // Create 5 buckets
+            for (let i = 0; i < 5; i++) {
+                const row = document.createElement('div');
+                row.className = 'bucket-row';
+                row.innerHTML = `
+                    <div class="bucket-index" id="bucket-${i}">[${i}]</div>
+                    <div class="chain-container" id="chain-${i}">
+                        <div class="empty-slot">null</div>
+                    </div>
+                `;
+                table.appendChild(row);
+            }
+
+            // Add existing data for demonstration
+            document.getElementById('chain-2').innerHTML = `
+                <div class="node" id="apple-node">
+                    <div class="node-data">apple: 10</div>
+                    <div class="node-next null-next">null</div>
+                </div>
+            `;
+        }
+
+        function updateOperation(text) {
+            document.getElementById('operationDisplay').textContent = text;
+        }
+
+        function updateStep(title, description) {
+            document.getElementById('stepIndicator').innerHTML = `
+                <div class="step-title">${title}</div>
+                <div class="step-description">${description}</div>
+            `;
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        function highlightCode(lineNumber) {
+            // Remove previous highlights
+            document.querySelectorAll('.code-line').forEach(line => line.classList.remove('highlight'));
+            
+            // Add highlight to specific line
+            if (lineNumber >= 0) {
+                const lines = document.querySelectorAll('.code-line');
+                if (lines[lineNumber]) {
+                    lines[lineNumber].classList.add('highlight');
+                }
+            }
+        }
+
+        function showHashCalculation(key, result) {
+            const calc = document.getElementById('hashCalculation');
+            calc.style.display = 'block';
+            calc.innerHTML = `hash("${key}") % 5 = ${result}`;
+        }
+
+        function hideHashCalculation() {
+            document.getElementById('hashCalculation').style.display = 'none';
+        }
+
+        function resetVisualState() {
+            // Reset all bucket highlights
+            document.querySelectorAll('.bucket-index').forEach(bucket => {
+                bucket.classList.remove('active');
+            });
+
+            // Reset all node states
+            document.querySelectorAll('.node').forEach(node => {
+                node.classList.remove('examining', 'updated', 'new-node');
+            });
+
+            // Reset arrows
+            document.querySelectorAll('.arrow').forEach(arrow => {
+                arrow.classList.remove('highlight');
+            });
+
+            // Reset code highlighting
+            highlightCode(-1);
+            
+            // Reset progress
+            updateProgress(0);
+            
+            // Hide hash calculation
+            hideHashCalculation();
+        }
+
+        function animateScenario1() {
+            resetVisualState();
+            createHashTable();
+
+            const steps = [
+                {
+                    title: "🎯 Starting Update Operation",
+                    description: "We want to update 'apple' from 10 to 25",
+                    operation: "Put('apple', 25)",
+                    code: 0,
+                    progress: 10,
+                    action: () => {}
+                },
+                {
+                    title: "🔢 Calculate Hash Index",
+                    description: "Using hash function to find bucket location",
+                    operation: "Calculating hash('apple') % 5 = 2",
+                    code: 2,
+                    progress: 20,
+                    action: () => {
+                        showHashCalculation('apple', 2);
+                        document.getElementById('bucket-2').classList.add('active');
+                    }
+                },
+                {
+                    title: "🆕 Create New Node",
+                    description: "Creating new node with key='apple' and value=25",
+                    operation: "newNode = Node('apple', 25)",
+                    code: 3,
+                    progress: 30,
+                    action: () => {}
+                },
+                {
+                    title: "🔍 Check If Bucket Empty",
+                    description: "Bucket[2] is not null, so we enter the else block",
+                    operation: "buckets[2] != null → Enter else block",
+                    code: 5,
+                    progress: 40,
+                    action: () => {}
+                },
+                {
+                    title: "👀 Start Chain Traversal",
+                    description: "Setting current pointer to first node in chain",
+                    operation: "current = buckets[2] (apple node)",
+                    code: 12,
+                    progress: 50,
+                    action: () => {
+                        document.getElementById('apple-node').classList.add('examining');
+                    }
+                },
+                {
+                    title: "🔍 Check Key Match",
+                    description: "Comparing current node's key with our search key",
+                    operation: "current.Key ('apple') == key ('apple') → TRUE!",
+                    code: 17,
+                    progress: 70,
+                    action: () => {}
+                },
+                {
+                    title: "✅ Update Value",
+                    description: "Key matches! Update the value and return",
+                    operation: "current.Value = 25, Operation Complete!",
+                    code: 19,
+                    progress: 100,
+                    action: () => {
+                        const node = document.getElementById('apple-node');
+                        node.classList.remove('examining');
+                        node.classList.add('updated');
+                        node.textContent = 'apple: 25';
+                    }
+                }
+            ];
+
+            executeSteps(steps);
+        }
+
+        function animateScenario2() {
+            resetVisualState();
+            createHashTable();
+
+            const steps = [
+                // PART 1: Adding banana to existing apple
+                {
+                    title: "🎯 First Insert: Adding Banana",
+                    description: "We start by adding 'banana' to a chain that already has 'apple'",
+                    operation: "Put('banana', 20)",
+                    code: 0,
+                    progress: 5,
+                    action: () => {}
+                },
+                {
+                    title: "🔢 Calculate Hash for Banana",
+                    description: "Using hash function to find bucket location",
+                    operation: "hash('banana') % 5 = 2 (Collision!)",
+                    code: 2,
+                    progress: 10,
+                    action: () => {
+                        showHashCalculation('banana', 2);
+                        document.getElementById('bucket-2').classList.add('active');
+                    }
+                },
+                {
+                    title: "🆕 Create New Node for Banana",
+                    description: "Creating new node with key='banana' and value=20",
+                    operation: "newNode = Node('banana', 20)",
+                    code: 3,
+                    progress: 15,
+                    action: () => {}
+                },
+                {
+                    title: "🔍 Check If Bucket Empty",
+                    description: "Bucket[2] contains 'apple', so enter else block",
+                    operation: "buckets[2] != null → Enter else block",
+                    code: 5,
+                    progress: 20,
+                    action: () => {}
+                },
+                {
+                    title: "👀 Initialize Pointers",
+                    description: "Set current to first node, previous to null",
+                    operation: "current = apple node, previous = null",
+                    code: 12,
+                    progress: 25,
+                    action: () => {
+                        const chain = document.getElementById('chain-2');
+                        chain.innerHTML = `
+                            <div class="node examining" id="apple-node" style="position: relative;">
+                                <div class="node-data">apple: 10</div>
+                                <div class="node-next null-next">null</div>
+                                <div class="pointer-indicator current-pointer">current</div>
+                            </div>
+                        `;
+                    }
+                },
+                {
+                    title: "🔍 Check Key Match",
+                    description: "Compare 'apple' with 'banana'",
+                    operation: "current.Key ('apple') != 'banana' → Continue",
+                    code: 17,
+                    progress: 30,
+                    action: () => {}
+                },
+                {
+                    title: "➡️ Move Pointers",
+                    description: "Update previous and current pointers",
+                    operation: "previous = apple, current = null",
+                    code: 22,
+                    progress: 35,
+                    action: () => {
+                        const chain = document.getElementById('chain-2');
+                        chain.innerHTML = `
+                            <div class="node" id="apple-node" style="position: relative;">
+                                <div class="node-data">apple: 10</div>
+                                <div class="node-next has-next">→</div>
+                                <div class="pointer-indicator previous-pointer">previous</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div style="position: relative; color: #666; font-style: italic; padding: 15px;">
+                                null
+                                <div class="pointer-indicator current-pointer null-pointer">current</div>
+                            </div>
+                        `;
+                    }
+                },
+                {
+                    title: "➕ Add Banana to Chain",
+                    description: "Link banana to end of chain",
+                    operation: "previous.Next = banana node",
+                    code: 27,
+                    progress: 40,
+                    action: () => {
+                        const chain = document.getElementById('chain-2');
+                        chain.innerHTML = `
+                            <div class="node">
+                                <div class="node-data">apple: 10</div>
+                                <div class="node-next has-next">→</div>
+                            </div>
+                            <div class="arrow highlight">→</div>
+                            <div class="node new-node">
+                                <div class="node-data">banana: 20</div>
+                                <div class="node-next null-next">null</div>
+                            </div>
+                        `;
+                    }
+                },
+                
+                // PART 2: Adding grape to existing apple → banana chain
+                {
+                    title: "🍇 Second Insert: Adding Grape",
+                    description: "Now we add 'grape' to the chain: apple → banana",
+                    operation: "Put('grape', 30)",
+                    code: 0,
+                    progress: 45,
+                    action: () => {
+                        setTimeout(() => {
+                            const chain = document.getElementById('chain-2');
+                            chain.innerHTML = `
+                                <div class="node">
+                                    <div class="node-data">apple: 10</div>
+                                    <div class="node-next has-next">→</div>
+                                </div>
+                                <div class="arrow">→</div>
+                                <div class="node">
+                                    <div class="node-data">banana: 20</div>
+                                    <div class="node-next null-next">null</div>
+                                </div>
+                            `;
+                        }, 500);
+                    }
+                },
+                {
+                    title: "🔢 Calculate Hash for Grape",
+                    description: "Using hash function to find bucket location",
+                    operation: "hash('grape') % 5 = 2 (Another Collision!)",
+                    code: 2,
+                    progress: 50,
+                    action: () => {
+                        showHashCalculation('grape', 2);
+                    }
+                },
+                {
+                    title: "🆕 Create New Node for Grape",
+                    description: "Creating new node with key='grape' and value=30",
+                    operation: "newNode = Node('grape', 30)",
+                    code: 3,
+                    progress: 55,
+                    action: () => {}
+                },
+                {
+                    title: "👀 Initialize Pointers Again",
+                    description: "Set current to first node, previous to null",
+                    operation: "current = apple node, previous = null",
+                    code: 12,
+                    progress: 60,
+                    action: () => {
+                        const chain = document.getElementById('chain-2');
+                        chain.innerHTML = `
+                            <div class="node examining" id="apple-node" style="position: relative;">
+                                <div class="node-data">apple: 10</div>
+                                <div class="node-next has-next">→</div>
+                                <div class="pointer-indicator current-pointer">current</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div class="node" id="banana-node" style="position: relative;">
+                                <div class="node-data">banana: 20</div>
+                                <div class="node-next null-next">null</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div style="position: relative; color: #666; font-style: italic; padding: 15px;">
+                                null
+                            </div>
+                        `;
+                    }
+                },
+                {
+                    title: "🔍 Check Apple vs Grape",
+                    description: "Compare first node's key with grape",
+                    operation: "current.Key ('apple') != 'grape' → Continue",
+                    code: 17,
+                    progress: 65,
+                    action: () => {}
+                },
+                {
+                    title: "➡️ Move to Banana Node",
+                    description: "Update pointers to move along chain",
+                    operation: "previous = apple, current = banana",
+                    code: 22,
+                    progress: 70,
+                    action: () => {
+                        const chain = document.getElementById('chain-2');
+                        chain.innerHTML = `
+                            <div class="node" id="apple-node" style="position: relative;">
+                                <div class="node-data">apple: 10</div>
+                                <div class="node-next has-next">→</div>
+                                <div class="pointer-indicator previous-pointer">previous</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div class="node examining" id="banana-node" style="position: relative;">
+                                <div class="node-data">banana: 20</div>
+                                <div class="node-next null-next">null</div>
+                                <div class="pointer-indicator current-pointer">current</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div style="position: relative; color: #666; font-style: italic; padding: 15px;">
+                                null
+                            </div>
+                        `;
+                    }
+                },
+                {
+                    title: "🔍 Check Banana vs Grape",
+                    description: "Compare second node's key with grape",
+                    operation: "current.Key ('banana') != 'grape' → Continue",
+                    code: 17,
+                    progress: 75,
+                    action: () => {}
+                },
+                {
+                    title: "➡️ Move to End of Chain",
+                    description: "Update pointers - reach end of chain",
+                    operation: "previous = banana, current = null",
+                    code: 22,
+                    progress: 80,
+                    action: () => {
+                        const chain = document.getElementById('chain-2');
+                        chain.innerHTML = `
+                            <div class="node">
+                                <div class="node-data">apple: 10</div>
+                                <div class="node-next has-next">→</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div class="node" id="banana-node" style="position: relative;">
+                                <div class="node-data">banana: 20</div>
+                                <div class="node-next has-next">→</div>
+                                <div class="pointer-indicator previous-pointer">previous</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div style="position: relative; color: #666; font-style: italic; padding: 15px;">
+                                null
+                                <div class="pointer-indicator current-pointer null-pointer">current</div>
+                            </div>
+                        `;
+                    }
+                },
+                {
+                    title: "🔚 End of Chain Reached",
+                    description: "Current is null, exit while loop",
+                    operation: "current == null → Exit while loop",
+                    code: 15,
+                    progress: 90,
+                    action: () => {}
+                },
+                {
+                    title: "➕ Add Grape to Chain End",
+                    description: "Link grape to the end via previous pointer",
+                    operation: "previous.Next = grape node, size++",
+                    code: 27,
+                    progress: 100,
+                    action: () => {
+                        const chain = document.getElementById('chain-2');
+                        chain.innerHTML = `
+                            <div class="node">
+                                <div class="node-data">apple: 10</div>
+                                <div class="node-next has-next">→</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div class="node">
+                                <div class="node-data">banana: 20</div>
+                                <div class="node-next has-next">→</div>
+                            </div>
+                            <div class="arrow highlight">→</div>
+                            <div class="node new-node">
+                                <div class="node-data">grape: 30</div>
+                                <div class="node-next null-next">null</div>
+                            </div>
+                        `;
+                    }
+                }
+            ];
+
+            executeSteps(steps);
+        }
+
+        function executeSteps(steps) {
+            currentSteps = steps;
+            currentStepIndex = 0;
+            isPaused = false;
+            stepStartTime = Date.now();
+            
+            function nextStep() {
+                if (isPaused) return;
+                
+                if (currentStepIndex < steps.length) {
+                    const step = steps[currentStepIndex];
+                    
+                    updateStep(step.title, step.description);
+                    updateOperation(step.operation);
+                    updateProgress(step.progress);
+                    highlightCode(step.code);
+                    step.action();
+
+                    currentStepIndex++;
+                    stepStartTime = Date.now();
+                    animationTimeout = setTimeout(nextStep, 2500);
+                }
+            }
+
+            nextStep();
+        }
+
+        function togglePause() {
+            const pauseBtn = document.getElementById('pauseBtn');
+            
+            if (isPaused) {
+                // Resume animation
+                isPaused = false;
+                pauseBtn.innerHTML = '⏸️ Pause';
+                pauseBtn.classList.remove('active');
+                
+                // Calculate remaining time for current step
+                const elapsedTime = pausedTime;
+                const remainingTime = Math.max(0, 2500 - elapsedTime);
+                
+                // Continue with remaining steps
+                if (currentStepIndex < currentSteps.length) {
+                    animationTimeout = setTimeout(() => {
+                        currentStepIndex++;
+                        executeRemainingSteps();
+                    }, remainingTime);
+                }
+            } else {
+                // Pause animation
+                isPaused = true;
+                pauseBtn.innerHTML = '▶️ Resume';
+                pauseBtn.classList.add('active');
+                
+                // Calculate how much time has passed since step started
+                pausedTime = Date.now() - stepStartTime;
+                
+                // Clear the current timeout
+                if (animationTimeout) {
+                    clearTimeout(animationTimeout);
+                }
+            }
+        }
+
+        function executeRemainingSteps() {
+            if (isPaused) return;
+            
+            function nextStep() {
+                if (isPaused) return;
+                
+                if (currentStepIndex < currentSteps.length) {
+                    const step = currentSteps[currentStepIndex];
+                    
+                    updateStep(step.title, step.description);
+                    updateOperation(step.operation);
+                    updateProgress(step.progress);
+                    highlightCode(step.code);
+                    step.action();
+
+                    currentStepIndex++;
+                    stepStartTime = Date.now();
+                    animationTimeout = setTimeout(nextStep, 2500);
+                }
+            }
+
+            nextStep();
+        }
+
+        function showScenario(scenario) {
+            // Clear any existing animation
+            if (animationTimeout) {
+                clearTimeout(animationTimeout);
+            }
+
+            // Reset pause state
+            isPaused = false;
+            const pauseBtn = document.getElementById('pauseBtn');
+            pauseBtn.innerHTML = '⏸️ Pause';
+            pauseBtn.classList.remove('active');
+
+            currentScenario = scenario;
+            
+            // Update button states
+            document.querySelectorAll('.scenario-btn').forEach((btn, index) => {
+                if (index < 3) { // Only first 3 buttons are scenario buttons
+                    btn.classList.toggle('active', index === scenario - 1);
+                }
+            });
+
+            if (scenario === 1) {
+                animateScenario1();
+            } else if (scenario === 2) {
+                animateScenario2();
+            }
+        }
+
+        function resetAnimation() {
+            if (animationTimeout) {
+                clearTimeout(animationTimeout);
+            }
+            
+            // Reset pause state
+            isPaused = false;
+            const pauseBtn = document.getElementById('pauseBtn');
+            pauseBtn.innerHTML = '⏸️ Pause';
+            pauseBtn.classList.remove('active');
+            
+            resetVisualState();
+            createHashTable();
+            updateStep("🔄 Animation Reset", "Click a scenario button to start the animation");
+            updateOperation("Ready to start...");
+            updateProgress(0);
+        }
+
+        // Initialize
+        createHashTable();
+        updateStep("👋 Welcome!", "Click 'Scenario 1' or 'Scenario 2' to see how hash table insertion works");
+        updateOperation("Ready to start...");
+    </script>
+</body>
+</html>
